@@ -7,6 +7,9 @@ from django.core.validators import MinValueValidator
 class Categories(models.Model):
     category_name = models.CharField(max_length=255)
 
+    def __str__(self) -> str:
+        return self.category_name
+
 
 class Product(models.Model):
     product_name = models.CharField(max_length=255)
@@ -16,6 +19,12 @@ class Product(models.Model):
     discounted_price = models.DecimalField(max_digits=8, decimal_places=2, validators=[MinValueValidator(1)])
     product_description = models.TextField()
     category = models.ForeignKey(Categories, on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return self.product_name
+
+    class Meta:
+        ordering = ['product_name', 'product_price']
 
 
 class Cart(models.Model):
@@ -27,4 +36,31 @@ class CartItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
     quantity = models.BigIntegerField()
 
+    def __str__(self) -> str:
+        return self.product
 
+class Order(models.Model):
+    PAYMENT_STATUS_PENDING = 'P'
+    PAYMENT_STATUS_COMPLETE = 'C'
+    PAYMENT_STATUS_FAILED = 'F'
+    PAYMENT_STATUS_CHOICES = [
+        (PAYMENT_STATUS_PENDING, 'Pending'),
+        (PAYMENT_STATUS_COMPLETE, 'Complete'),
+        (PAYMENT_STATUS_FAILED, 'Failed')
+    ]
+
+    placed_at = models.DateTimeField(auto_now_add=True)
+    payment_status = models.CharField(
+        max_length=1, choices=PAYMENT_STATUS_CHOICES, default=PAYMENT_STATUS_PENDING)
+    
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    quantity = models.PositiveSmallIntegerField()
+    unit_price = models.DecimalField(max_digits=6, decimal_places=2)
+    added_at = models.DateTimeField()
+
+    def __str__(self) -> str:
+        return self.product
