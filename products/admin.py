@@ -9,8 +9,23 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
+    search_fields = ['product_name']
     autocomplete_fields = ['category']
-admin.site.register(Cart)
-admin.site.register(CartItem)
-admin.site.register(Order)
-admin.site.register(OrderItem)
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    search_fields = ['added_at']
+
+@admin.register(CartItem)
+class CartItemAdmin(admin.ModelAdmin):
+    autocomplete_fields = ['cart', 'product']
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    search_fields = ['']
+
+
+@admin.register(OrderItem)
+class OrderItemAdmin(admin.ModelAdmin):
+    autocomplete_fields = ['order', 'product']
