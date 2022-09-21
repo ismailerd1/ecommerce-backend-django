@@ -22,7 +22,7 @@ class Product(models.Model):
     product_price = models.DecimalField(max_digits=8, decimal_places=2, validators=[MinValueValidator(1)])
     discounted_price = models.DecimalField(max_digits=8, decimal_places=2, validators=[MinValueValidator(1)])
     product_description = models.TextField()
-    category = models.ForeignKey(Categories, on_delete=models.CASCADE)
+    categories = models.ForeignKey(Categories, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return self.product_name
