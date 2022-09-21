@@ -1,6 +1,13 @@
 from django.urls import path
+from rest_framework_nested import routers
 from . import views
 
-urlpatterns = [
-    path('home/', views.home, name='home' )
-]
+
+router = routers.DefaultRouter()
+router.register('categories', views.CategoryViewSet)
+router.register('products', views.ProductViewSet)
+router.register('order', views.OrderViewSet)
+router.register('order-item', views.OrderItemViewSet)
+
+
+urlpatterns = router.urls

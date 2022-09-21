@@ -17,7 +17,7 @@ class Categories(models.Model):
 
 class Product(models.Model):
     product_name = models.CharField(max_length=255)
-    product_image = models.ImageField()
+    product_image = models.ImageField( null=True, blank=True)
     slug = models.SlugField(null=True, blank=True)
     product_price = models.DecimalField(max_digits=8, decimal_places=2, validators=[MinValueValidator(1)])
     discounted_price = models.DecimalField(max_digits=8, decimal_places=2, validators=[MinValueValidator(1)])
@@ -67,7 +67,7 @@ class OrderItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
     quantity = models.PositiveSmallIntegerField()
     unit_price = models.DecimalField(max_digits=6, decimal_places=2)
-    added_at = models.DateTimeField()
+    added_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
         return self.product
