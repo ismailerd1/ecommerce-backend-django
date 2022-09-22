@@ -16,7 +16,10 @@ class ProductSerializer(serializers.ModelSerializer):
     percentage_discount = serializers.SerializerMethodField(method_name='percentage_discount_')
     def percentage_discount_(self, product : Product):
         difference = product.product_price - product.discounted_price
-        return (difference/product.product_price) * 100
+        percent =  (difference/product.product_price) * 100
+        if percent < 0:
+            return "No discount"
+        return percent
 
 
 class OrderSerializer(serializers.ModelSerializer):
