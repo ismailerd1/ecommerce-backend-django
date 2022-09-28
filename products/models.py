@@ -61,13 +61,16 @@ class Order(models.Model):
     object_id = models.PositiveIntegerField(null=True)
     content_object = GenericForeignKey()
 
+    def __str__(self) -> str:
+        return self.customer.first_name
+    
+
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.PROTECT)
-    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    order = models.ForeignKey(Order, on_delete=models.PROTECT, related_name='order_items')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveSmallIntegerField()
-    unit_price = models.DecimalField(max_digits=6, decimal_places=2)
     added_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
-        return self.product
+        return self.quantity
