@@ -1,14 +1,17 @@
-from pyexpat import model
 from rest_framework import serializers
 from .models import *
 
+
+
 class CustomerSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField()
     class Meta:
         model = Customer
-        fields = ['first_name', 'last_name', 'username','email', 'phone']
+        fields = ['id', 'user_id', 'phone']
+
 
 
 class CustomerDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model =Customer
-        fields = ['first_name', 'last_name', 'username']
+        fields = ['user_first_name', 'user_last_name', 'user_username']
