@@ -1,12 +1,23 @@
 from django.db import models
+from django.contrib import admin
+from django.conf import settings
 
 
 class Customer(models.Model):
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
-    username = models.CharField(max_length=255)
-    email = models.EmailField(max_length=255)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     phone = models.CharField(max_length=255)
 
     def __str__(self) -> str:
-        return self.first_name
+        return self.user.first_name
+
+    @admin.display(ordering='user.first_name')
+    def first_name(self):
+        return self.user.first_name
+
+    @admin.display(ordering='user.last_name')
+    def last_name(self):
+        return self.user.last_name
+
+    @admin.display(ordering='user.email')
+    def email(self):
+        return self.user.email

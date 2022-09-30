@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'rest_framework',
 
     'products',
-    'accounts'
+    'accounts',
+    'user_custom'
 ]
 
 MIDDLEWARE = [
@@ -127,6 +128,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
+
+AUTH_USER_MODEL = 'user_custom.User'
 
 LANGUAGE_CODE = 'en-us'
 
