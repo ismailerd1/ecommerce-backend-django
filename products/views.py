@@ -1,7 +1,7 @@
-from urllib import request
-from django.shortcuts import render
 from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, RetrieveModelMixin
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
+
+from products.permissions import IsAdminOrReadOnly
 from .serializer import *
 from .models import * 
 
@@ -9,16 +9,19 @@ from .models import *
 class CategoryViewSet(ModelViewSet):
     queryset = Categories.objects.all()
     serializer_class = CategoriesSerializer
+    permission_classes = [IsAdminOrReadOnly]
     
 
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    permission_classes = [IsAdminOrReadOnly]
     
 
 class OrderViewSet(CreateModelMixin, RetrieveModelMixin, DestroyModelMixin ,GenericViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    permission_classes = [IsAdminOrReadOnly]
 
 
 class OrderItemViewSet(ModelViewSet):
