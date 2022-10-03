@@ -56,7 +56,7 @@ class Order(models.Model):
     placed_at = models.DateTimeField(auto_now_add=True)
     payment_status = models.CharField(
         max_length=1, choices=PAYMENT_STATUS_CHOICES, default=PAYMENT_STATUS_PENDING)
-    customer = models.ForeignKey(Customer, on_delete=models.PROTECT, null=True)
+    customer = models.ForeignKey(Customer, on_delete=models.PROTECT, null=True, related_name='customer')
     content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT, null=True, blank=True)
     object_id = models.PositiveIntegerField(null=True)
     content_object = GenericForeignKey()
@@ -64,7 +64,6 @@ class Order(models.Model):
     def __str__(self) -> str:
         return self.customer.first_name
     
-
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.PROTECT, related_name='order_items')

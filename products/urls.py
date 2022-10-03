@@ -7,10 +7,8 @@ from . import views
 router = routers.DefaultRouter()
 router.register('categories', views.CategoryViewSet)
 router.register('products', views.ProductViewSet)
-router.register('order', views.OrderViewSet)
-
-order_items_router = routers.NestedDefaultRouter(router, 'order', lookup='order')
-order_items_router.register('items', views.OrderItemViewSet, basename='order-items')
+router.register('order', views.OrderViewSet, basename='order')
 
 
-urlpatterns = router.urls + order_items_router.urls
+
+urlpatterns = router.urls
