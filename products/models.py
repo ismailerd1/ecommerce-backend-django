@@ -17,7 +17,7 @@ class Categories(models.Model):
 
 class Product(models.Model):
     product_name = models.CharField(max_length=255)
-    product_image = models.ImageField( null=True, blank=True)
+    product_image = models.ImageField(null=True, blank=True, upload_to='products/images')
     slug = models.SlugField(null=True, blank=True)
     product_price = models.DecimalField(max_digits=8, decimal_places=2, validators=[MinValueValidator(1)])
     discounted_price = models.DecimalField(max_digits=8, decimal_places=2, validators=[MinValueValidator(1)])
