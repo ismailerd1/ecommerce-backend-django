@@ -7,7 +7,7 @@ from .models import *
 # Register your models here.
 @admin.register(Categories)
 class CategoryAdmin(admin.ModelAdmin):
-    search_fields = ['']
+    search_fields = ['category_name']
     list_display = ['category_name', 'product_count']
 
     @admin.display(ordering='product_count')
