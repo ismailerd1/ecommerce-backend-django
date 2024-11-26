@@ -1,12 +1,11 @@
-from ast import Mod
 from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, RetrieveModelMixin
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 
 from products.permissions import IsAdminOrReadOnly
-from .serializer import *
-from .models import * 
+from products.serializer import CategoriesSerializer, ProductSerializer, CartSerializer, AddCartItemSerializer, UpdateCartItemSerializer, CartItemSerializer, CreateOrderSerializer, OrderSerializer, UpdateOrderSerializer
+from products.models import Categories, Product, Cart, CartItem, Order, Customer
 
 
 class CategoryViewSet(ModelViewSet):
@@ -76,5 +75,5 @@ class OrderViewSet(ModelViewSet):
         if user.is_staff:
             return Order.objects.all()
 
-        (customer_id, created) = Customer.objects.only('id').get_or_create(user_id=user.id)
+        (customer_id, _) = Customer.objects.only('id').get_or_create(user_id=user.id)
         return Order.objects.filter(customer_id=customer_id)

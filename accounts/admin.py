@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Customer
+
+from accounts.models import Customer
 
 
 class CustomerFilter(admin.SimpleListFilter):
@@ -13,5 +14,3 @@ class CustomerAdmin(admin.ModelAdmin):
     list_filter = ['user__email']
     ordering = ['user__first_name', 'user__last_name', 'phone']
     autocomplete_fields = ['user']
-    
-

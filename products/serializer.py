@@ -1,9 +1,9 @@
 from decimal import Decimal
-from itertools import product
-from pyexpat import model
+
 from django.db import transaction
 from rest_framework import serializers
-from .models import *
+
+from products.models import Categories, Product, Cart, CartItem, Order, OrderItem, Customer
 
 class CategoriesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,6 +30,7 @@ class ProductDetailsSerializer(serializers.ModelSerializer):
         model = Product
         fields = ['id', 'product_name', 'product_description','discounted_price']
 
+
 class CartItemSerializer(serializers.ModelSerializer):
     product = ProductDetailsSerializer()
     total_price = serializers.SerializerMethodField()
@@ -41,8 +42,7 @@ class CartItemSerializer(serializers.ModelSerializer):
     
     def get_total_price(self, cartItem: CartItem):
         return cartItem.quantity * cartItem.product.discounted_price
-
-
+    
 
 class CartSerializer(serializers.ModelSerializer):
     cart_items = CartItemSerializer(many=True, read_only=True)
@@ -86,12 +86,11 @@ class UpdateCartItemSerializer(serializers.ModelSerializer):
         fields = ['quantity']
 
 
-
 class OrderItemSerializer(serializers.ModelSerializer):
     product = ProductDetailsSerializer()
     total_price = serializers.SerializerMethodField()
 
-    def get_total_price(self, orderitem : OrderItem):
+    def get_total_price(self, orderitem:OrderItem):
         return Decimal(orderitem.quantity) * orderitem.product.discounted_price
 
     class Meta:
@@ -103,9 +102,8 @@ class OrderSerializer(serializers.ModelSerializer):
     order_items = OrderItemSerializer(many=True, read_only=True)
     total_price_of_orders = serializers.SerializerMethodField()
 
-    def get_total_price_of_orders(self, order_items : OrderItem):
+    def get_total_price_of_orders(self, order_items:OrderItem):
         return sum([item.quantity * item.product.discounted_price for item in order_items.order_items.all()])
-
 
     class Meta:
         model = Order
@@ -119,7 +117,7 @@ class CreateOrderSerializer(serializers.Serializer):
         with transaction.atomic():
             cart_id = self.validated_data['cart_id']
 
-            (customer, created) = Customer.objects.get_or_create(
+            (customer, _) = Customer.objects.get_or_create(
                 user_id=self.context['user_id'])
             order = Order.objects.create(customer=customer)
 

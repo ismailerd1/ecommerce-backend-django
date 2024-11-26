@@ -1,12 +1,10 @@
-from operator import mod
-from statistics import mode
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.core.validators import MinValueValidator
+
 from accounts.models import Customer
 
-# Create your models here.
 
 class Categories(models.Model):
     category_name = models.CharField(max_length=255)
