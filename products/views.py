@@ -7,6 +7,10 @@ from products.permissions import IsAdminOrReadOnly
 from products.serializer import CategoriesSerializer, ProductSerializer, CartSerializer, AddCartItemSerializer, UpdateCartItemSerializer, CartItemSerializer, CreateOrderSerializer, OrderSerializer, UpdateOrderSerializer
 from products.models import Categories, Product, Cart, CartItem, Order, Customer
 
+from django.db import transaction
+from rest_framework import status
+from django.core.cache import cache
+from products.tasks import send_order_confirmation_email
 
 class CategoryViewSet(ModelViewSet):
     queryset = Categories.objects.all()
@@ -19,6 +23,14 @@ class ProductViewSet(ModelViewSet):
     serializer_class = ProductSerializer
     permission_classes = [IsAdminOrReadOnly]
 
+    def list(self, request, *args, **kwargs):
+        cached_products = cache.get('all_products')
+        if cached_products is not None:
+            return Response(cached_products)
+        
+        response = super().list(request, *args, **kwargs)
+        cache.set('all_products', response.data, timeout=60*60) 
+        return response
 
 class CartViewSet(CreateModelMixin, RetrieveModelMixin , DestroyModelMixin, GenericViewSet):
     queryset = Cart.objects.all()
@@ -49,15 +61,24 @@ class OrderViewSet(ModelViewSet):
         if self.request.method in ['PATCH', 'DELETE']:
             return [IsAdminUser()]
         return [IsAuthenticated()]
-
     def create(self, request, *args, **kwargs):
-        serializer = CreateOrderSerializer(
-            data=request.data,
-            context={'user_id': self.request.user.id})
-        serializer.is_valid(raise_exception=True)
-        order = serializer.save()
-        serializer = OrderSerializer(order)
-        return Response(serializer.data)
+        try:
+            with transaction.atomic():
+                serializer = CreateOrderSerializer(
+                    data=request.data,
+                    context={'user_id': self.request.user.id}
+                )
+                serializer.is_valid(raise_exception=True)
+                order = serializer.save()  
+                order_serializer = OrderSerializer(order)
+                send_order_confirmation_email.delay(
+                    order.id, 
+                    self.request.user.email, 
+                    self.request.user.first_name
+                )
+                return Response(order_serializer.data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def get_serializer_class(self):
         if self.request.method == 'POST':

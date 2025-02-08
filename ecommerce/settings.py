@@ -39,10 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'debug_toolbar',
+    'debug_toolbar'if DEBUG else '',
     'rest_framework',
     'djoser',
     'corsheaders',
+    'django_prometheus',
 
     'products',
     'accounts',
@@ -50,8 +51,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware'if DEBUG else '',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -59,6 +61,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_prometheus.middleware.PrometheusAfterMiddleware',
     
 ]
 
@@ -69,6 +72,22 @@ INTERNAL_IPS = [
 CORS_ALLOWED_ORIGINS = []
 
 ROOT_URLCONF = 'ecommerce.urls'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',  
+        'LOCATION': 'redis://127.0.0.1:6379/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient', 
+        },
+    }
+}
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/0'  
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
 
 TEMPLATES = [
     {
@@ -95,12 +114,23 @@ WSGI_APPLICATION = 'ecommerce.wsgi.application'
 
 DATABASES = {
     'default': {
+        #You can change informations and migrate it your own database
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'NAME',
+        'USER':'USER',
+        'PASSWORD':'PASSWORD',
+        'HOST':'localhost',
+        'PORT':'5432',
+    }
+}
+
+""" DATABASES = {
+    'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
-}
+} """
 """
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',

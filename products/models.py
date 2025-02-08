@@ -11,7 +11,10 @@ class Categories(models.Model):
 
     def __str__(self) -> str:
         return self.category_name
-
+    class Meta:
+        indexes = [
+            models.Index(fields=['category_name']),  
+        ]
 
 class Product(models.Model):
     product_name = models.CharField(max_length=255)
@@ -27,10 +30,19 @@ class Product(models.Model):
 
     class Meta:
         ordering = ['product_name', 'product_price']
+        indexes = [
+            models.Index(fields=['product_name']),  
+            models.Index(fields=['product_price']),
+            models.Index(fields=['categories']),
+        ]
 
 
 class Cart(models.Model):
     added_at = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        indexes = [
+            models.Index(fields=['added_at']),  
+        ]
 
 
 class CartItem(models.Model):
@@ -61,6 +73,11 @@ class Order(models.Model):
 
     def __str__(self) -> str:
         return self.customer.first_name
+    class Meta:
+        indexes = [
+            models.Index(fields=['placed_at']),  
+            models.Index(fields=['payment_status']), 
+        ]
     
 
 class OrderItem(models.Model):
@@ -71,3 +88,8 @@ class OrderItem(models.Model):
 
     def __str__(self) -> str:
         return self.quantity
+    class Meta:
+        indexes = [
+            models.Index(fields=['order']), 
+            models.Index(fields=['product']),
+        ]
